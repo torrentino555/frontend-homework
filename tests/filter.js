@@ -25,4 +25,12 @@ QUnit.module('Проверка работы функции filter', function () 
 		assert.strictEqual(filter(`<script>alert('1');</script>`, ['strong', 'em']), '&lt;script&gt;alert(&#39;1&#39;);&lt;/script&gt;');
 		assert.strictEqual(filter(`<img src="bad" onerror="alert('1');">`, ['strong', 'em']), '&lt;img src=&quot;bad&quot; onerror=&quot;alert(&#39;1&#39;);&quot;&gt;');
 	});
+
+	QUnit.test('filter экранирует теги "a", "/a"', function (assert) {
+		assert.strictEqual(filter(`<a>Click</a>`, ['strong', 'em']), '&lt;a&gt;Click&lt;/a&gt;');
+	});
+
+	QUnit.test('filter экранирует теги в тегах', function (assert) {
+		assert.strictEqual(filter(`<a href="http://habrahabr.ru" <a> </a>>Click</a>`, ['strong', 'em']), '&lt;a href=&quot;http://habrahabr.ru&quot; &lt;a&gt; &lt;/a&gt;&gt;Click&lt;/a&gt;');
+	});
 });
