@@ -1,64 +1,52 @@
 'use strict';
 
 const filter = function(str) {
-  var dictTags = new Map([
-    ['script', ''],
-    ['/script', ''],
-    ['a', ''],
-    ['/a', ''],
-    ['img', ''],
-    ['/img', '']
-  ]);
-  var result = "";
-  var indexLastWrite = null;
-  var gtValid = false;
-  Array.prototype.map.call(str, function(x, i) {
-    switch (x) {
-      case '<':
-        result += str.substring((indexLastWrite == null) ? 0 : indexLastWrite, i);
-        indexLastWrite = i + 1;
-
-        var leftI = i + 1;
-        var tag = null;
-        for (; leftI < str.length && str[leftI] != '<' && str[leftI] != '>'; leftI++) {
-          if (tag == null && str[leftI] == ' ')
-            tag = str.substring(i + 1, leftI);
+    str = str.replace(new RegExp('[&"\'<>]', 'g'), function(match) { // Экранирование всех запрещенных символов
+        switch (match) {
+            case '&':
+                return '&amp;';
+            case "'":
+                return '&#39;';
+            case '"':
+                return '&quot;';
+            case '<':
+                return '&lt;';
+            case '>':
+                return '&gt;';
         }
-        tag = (tag == null) ? str.substring(i + 1, leftI) : tag;
-
-        if (leftI == str.length || str[leftI] == '<' || dictTags.has(tag)) {
-          result += '&lt;';
-        } else {
-          result += '<';
-          gtValid = true;
+    });
+    str = str.replace(new RegExp('&lt;([a-zA-Z]*)&gt;|&lt;\/([a-zA-Z]*)&gt;', 'g'), function(match, p1, p2) {
+        console.log(p2);
+        let dictValidTags = new Map([
+            ['strong', ''],
+            ['em', ''],
+            ['b', ''],
+            ['br', ''],
+            ['h1', ''],
+            ['h2', ''],
+            ['h3', ''],
+            ['h4', ''],
+            ['h5', ''],
+            ['h6', ''],
+            ['hr', ''],
+            ['label', ''],
+            ['p', ''],
+            ['span', ''],
+            ['ul', ''],
+            ['ol', ''],
+            ['li', ''],
+            ['table', ''],
+            ['td', ''],
+            ['th', ''],
+            ['i', ''],
+            ['strong']
+        ]);
+        if (dictValidTags.has(p1)) {
+            return '<' + p1 + '>';
+        } else if (dictValidTags.has(p2)) {
+            return '</' + p2 + '>';
         }
-        break;
-
-      case '>':
-        if (gtValid) {
-          result += str.substring(indexLastWrite, i + 1);
-        } else {
-          result += str.substring((indexLastWrite == null) ? 0 : indexLastWrite, i) + '&gt;';
-        }
-        indexLastWrite = i + 1;
-        break;
-
-      case '&':
-        result += str.substring((indexLastWrite == null) ? 0 : indexLastWrite, i + 1) + 'amp;';
-        indexLastWrite = i + 1;
-        break;
-
-      case '\'':
-        result += str.substring((indexLastWrite == null) ? 0 : indexLastWrite, i) + '&#39;';
-        indexLastWrite = i + 1;
-        break;
-
-      case '"':
-        result += str.substring((indexLastWrite == null) ? 0 : indexLastWrite, i) + '&quot;';
-        indexLastWrite = i + 1;
-        break;
-    }
-  });
-  result += str.substring((indexLastWrite == null) ? 0 : indexLastWrite, str.length);
-  return result;
-}
+        return match;
+    });
+    return str;
+};
