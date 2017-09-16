@@ -1,7 +1,8 @@
 'use strict';
 
 const filter = function(str) {
-    str = str.replace(new RegExp('[&"\'<>]', 'g'), function(match) { // Экранирование всех запрещенных символов
+    str = str.replace(new RegExp('[&"\'<>]', 'g'), function(match) {
+        // Экранирование всех запрещенных символов
         switch (match) {
             case '&':
                 return '&amp;';
@@ -16,7 +17,7 @@ const filter = function(str) {
         }
     });
     str = str.replace(new RegExp('&lt;([a-zA-Z]*)&gt;|&lt;\/([a-zA-Z]*)&gt;', 'g'), function(match, p1, p2) {
-        console.log(p2);
+        // Нахождение всех допустимых html-тегов и запись их в текст
         let dictValidTags = new Map([
             ['strong', ''],
             ['em', ''],
