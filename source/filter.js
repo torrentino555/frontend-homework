@@ -12,10 +12,8 @@ const filter = function(str, dictValidTags) {
         ]);
         return dictNotValidLiterals.get(match);
     }).replace(
-      new RegExp('&lt;(\/?)([a-zA-Z]*)&gt;', 'g'),
+      new RegExp('&lt;(\/?)(' + dictValidTags.join('|') + ')&gt;', 'g'),
       function(match, p1, p2) {
-        if (dictValidTags.indexOf(p2) != -1)
-          return '<' + p1 + p2 + '>';
-        return match;
+        return '<' + p1 + p2 + '>';
     });
 };
